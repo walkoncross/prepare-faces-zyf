@@ -11,7 +11,7 @@ from matplotlib import pyplot as plt
 
 from fx_warp_and_crop_face import warp_and_crop_face, get_normalized_5points
 
-img_fn = './Jennifer_Aniston_0016.jpg'
+img_fn = '../test_imgs/Jennifer_Aniston_0016.jpg'
 #imgSize = [96, 112]; # cropped dst image size
 
 # facial points in cropped dst image
