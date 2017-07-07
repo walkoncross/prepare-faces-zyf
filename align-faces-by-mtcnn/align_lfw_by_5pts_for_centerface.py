@@ -19,7 +19,7 @@ from fx_warp_and_crop_face import get_normalized_5points, warp_and_crop_face
 #output_square = True
 #padding_factor = 0.25
 #output_padding = (0, 0)
-output_size = (112, 96)
+output_size = (96, 112)
 #
 ## get the normalized 5 landmarks position in the crop settings
 #normalized_5pts = get_normalized_5points(
