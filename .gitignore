@@ -1,2 +1,4 @@
 *pyc
 *.zip
+lfw-mtcnn-fd-rlt/*
+webface-mtcnn-fd-rlt/*
