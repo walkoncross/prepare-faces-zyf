@@ -29,7 +29,7 @@ normalized_5pts = get_normalized_5points(
 landmark_fn = r'../lfw-mtcnn-fd-rlt/lfw_mtcnn_falied3_align_rlt.json'
 img_root_dir = r'C:/zyf/dataset/lfw'
 #landmark_fn = r'../../lfw-mtcnn-fd-rlt/lfw_mtcnn_falied3_align_rlt.json'
-#webface_src_dir = r'/disk2/data/FACE/LFW/LFW'
+#img_root_dir = r'/disk2/data/FACE/LFW/LFW'
 aligned_save_dir = img_root_dir + '-mtcnn-aligned-224x224'
 
 log_fn1 = 'align_succeeded_list.txt'
