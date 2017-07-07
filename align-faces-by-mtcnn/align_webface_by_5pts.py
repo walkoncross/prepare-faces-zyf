@@ -16,8 +16,9 @@ import os.path as osp
 from fx_warp_and_crop_face import warp_and_crop_face
 
 
-landmark_fn = r'./landmark_yrj_8imgs.json'
+landmark_fn = r'../webface-mtcnn-fd-rlt/landmark_yrj_8imgs.json'
 webface_src_dir = r'C:/zyf/dataset/webface/CASIA-maxpy-clean'
+#landmark_fn = r'../../webface-mtcnn-fd-rlt/landmark_yrj_8imgs.json'
 #webface_src_dir = r'/disk2/data/FACE/webface/CASIA-maxpy-clean'
 aligned_save_dir = webface_src_dir + '-aligned'
 

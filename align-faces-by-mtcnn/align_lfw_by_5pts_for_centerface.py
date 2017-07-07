@@ -16,21 +16,21 @@ import os.path as osp
 from fx_warp_and_crop_face import get_normalized_5points, warp_and_crop_face
 
 # crop settings, set the region of cropped faces
-output_square = True
-padding_factor = 0.25
-output_padding = (0, 0)
-output_size = (224, 224)
-
-# get the normalized 5 landmarks position in the crop settings
-normalized_5pts = get_normalized_5points(
-    output_size, padding_factor, output_padding, output_square)
-
+#output_square = True
+#padding_factor = 0.25
+#output_padding = (0, 0)
+output_size = (112, 96)
+#
+## get the normalized 5 landmarks position in the crop settings
+#normalized_5pts = get_normalized_5points(
+#    output_size, padding_factor, output_padding, output_square)
+normalized_5pts = None
 
 landmark_fn = r'../lfw-mtcnn-fd-rlt/lfw_mtcnn_falied3_align_rlt.json'
 img_root_dir = r'C:/zyf/dataset/lfw'
 #landmark_fn = r'../../lfw-mtcnn-fd-rlt/lfw_mtcnn_falied3_align_rlt.json'
 #webface_src_dir = r'/disk2/data/FACE/LFW/LFW'
-aligned_save_dir = img_root_dir + '-mtcnn-aligned-224x224'
+aligned_save_dir = img_root_dir + '-mtcnn-aligned-112x96'
 
 log_fn1 = 'align_succeeded_list.txt'
 log_fn2 = 'align_failed_list.txt'
@@ -49,23 +49,23 @@ else:
         print('mkdir for aligned faces, aligned root dir: ', aligned_save_dir)
         os.makedirs(aligned_save_dir)
 
-    fp_log_params = open(osp.join(aligned_save_dir, log_align_params), 'w')
-#    params_template = '''
-#    output_square = {}
-#    padding_factor = {}
-#    output_padding = {}
-#    output_size = {}
-#    '''
-    params_template = ('output_square = {}\n'
-                       'padding_factor = {}\n'
-                       'output_padding = {}\n'
-                       'output_size = {}\n')
-
-    fp_log_params.write(params_template.format(
-            output_square, padding_factor,
-            output_padding, output_size)
-    )
-    fp_log_params.close()
+#    fp_log_params = open(osp.join(aligned_save_dir, log_align_params), 'w')
+##    params_template = '''
+##    output_square = {}
+##    padding_factor = {}
+##    output_padding = {}
+##    output_size = {}
+##    '''
+#    params_template = ('output_square = {}\n'
+#                       'padding_factor = {}\n'
+#                       'output_padding = {}\n'
+#                       'output_size = {}\n')
+#
+#    fp_log_params.write(params_template.format(
+#            output_square, padding_factor,
+#            output_padding, output_size)
+#    )
+#    fp_log_params.close()
 
     fp_log1 = open(osp.join(aligned_save_dir, log_fn1), 'w')
     fp_log2 = open(osp.join(aligned_save_dir, log_fn2), 'w')
