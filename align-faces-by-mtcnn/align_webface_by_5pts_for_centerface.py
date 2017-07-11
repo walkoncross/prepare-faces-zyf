@@ -13,14 +13,14 @@ import os
 import os.path as osp
 
 #from matplotlib import pyplot as plt
-from fx_warp_and_crop_face import warp_and_crop_face
+from fx_warp_and_crop_face import warp_and_crop_face, FaceWarpException
 
 
-landmark_fn = r'../webface-mtcnn-fd-rlt/landmark_yrj_8imgs.json'
+landmark_fn = r'./landmark_yrj_8imgs.json'
 webface_src_dir = r'C:/zyf/dataset/webface/CASIA-maxpy-clean'
 #landmark_fn = r'../../webface-mtcnn-fd-rlt/landmark_yrj_8imgs.json'
 #webface_src_dir = r'/disk2/data/FACE/webface/CASIA-maxpy-clean'
-aligned_save_dir = webface_src_dir + '-aligned'
+aligned_save_dir = webface_src_dir + '-simaligned'
 
 log_fn1 = 'align_succeeded_list.txt'
 log_fn2 = 'align_failed_list.txt'
@@ -97,8 +97,10 @@ else:
 
             dst_img = warp_and_crop_face(image, facial5points)
             cv2.imwrite(save_fn, dst_img)
-        except:
-            fp_log2.write(item['filename'] + ': ' + "exception when loading image or aligning faces or saving results"+'\n')
+        except Exception as e:
+            fp_log2.write(item['filename'] + ': ' +
+                          "exception when loading image or aligning faces or saving results"+'\n')
+            fp_log2.write("\texception: {}".format(e) +'\n')
             continue
 
         fp_log1.write(item['filename'] + ': ' + " succeeded to align"+'\n')

@@ -13,22 +13,22 @@ import os
 import os.path as osp
 
 #from matplotlib import pyplot as plt
-from fx_warp_and_crop_face import get_normalized_5points, warp_and_crop_face
+from fx_warp_and_crop_face import get_reference_facial_points, warp_and_crop_face
 
 output_square = True
 padding_factor = 0.25
 output_padding = (0, 0)
 output_size = (224, 224)
 
-normalized_5pts = get_normalized_5points(
+reference_5pts = get_reference_facial_points(
     output_size, padding_factor, output_padding, output_square)
 
 
-landmark_fn = r'../webface-mtcnn-fd-rlt/landmark_yrj_8imgs.json'
+landmark_fn = r'./landmark_yrj_8imgs.json'
 webface_src_dir = r'C:/zyf/dataset/webface/CASIA-maxpy-clean'
 #landmark_fn = r'../../webface-mtcnn-fd-rlt/landmark_yrj_8imgs.json'
 #webface_src_dir = r'/disk2/data/FACE/webface/CASIA-maxpy-clean'
-aligned_save_dir = webface_src_dir + '-aligned-vggface'
+aligned_save_dir = webface_src_dir + '-simaligned-vggface'
 
 log_fn1 = 'align_succeeded_list.txt'
 log_fn2 = 'align_failed_list.txt'
@@ -103,10 +103,12 @@ else:
         try:
             image = cv2.imread(img_fn, True);
 
-            dst_img = warp_and_crop_face(image, facial5points, normalized_5pts, output_size)
+            dst_img = warp_and_crop_face(image, facial5points, reference_5pts, output_size)
             cv2.imwrite(save_fn, dst_img)
-        except:
-            fp_log2.write(item['filename'] + ': ' + "exception when loading image or aligning faces or saving results"+'\n')
+        except Exception as e:
+            fp_log2.write(item['filename'] + ': ' +
+                          "exception when loading image or aligning faces or saving results"+'\n')
+            fp_log2.write("\texception: {}".format(e) +'\n')
             continue
 
         fp_log1.write(item['filename'] + ': ' + " succeeded to align"+'\n')

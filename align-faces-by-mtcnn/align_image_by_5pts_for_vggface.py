@@ -13,7 +13,7 @@ import os
 import os.path as osp
 
 #from matplotlib import pyplot as plt
-from fx_warp_and_crop_face import get_normalized_5points, warp_and_crop_face
+from fx_warp_and_crop_face import get_reference_facial_points, warp_and_crop_face
 
 # crop settings, set the region of cropped faces
 output_square = True
@@ -21,8 +21,8 @@ padding_factor = 0.25
 output_padding = (0, 0)
 output_size = (224, 224)
 
-# get the normalized 5 landmarks position in the crop settings
-normalized_5pts = get_normalized_5points(
+# get the referenced 5 landmarks position in the crop settings
+referenced_5pts = get_reference_facial_points(
     output_size, padding_factor, output_padding, output_square)
 
 img_root_dir = ''
@@ -117,7 +117,7 @@ for item in img_list:
         image = cv2.imread(img_fn, True)
 
         dst_img = warp_and_crop_face(
-            image, facial5points, normalized_5pts, output_size)
+            image, facial5points, referenced_5pts, output_size)
         cv2.imwrite(save_fn, dst_img)
     except:
         fp_log2.write(item['filename'] + ': ' +

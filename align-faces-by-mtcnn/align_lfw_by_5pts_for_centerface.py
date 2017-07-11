@@ -13,7 +13,7 @@ import os
 import os.path as osp
 
 #from matplotlib import pyplot as plt
-from fx_warp_and_crop_face import get_normalized_5points, warp_and_crop_face
+from fx_warp_and_crop_face import get_reference_facial_points, warp_and_crop_face
 
 # crop settings, set the region of cropped faces
 #output_square = True
@@ -21,16 +21,18 @@ from fx_warp_and_crop_face import get_normalized_5points, warp_and_crop_face
 #output_padding = (0, 0)
 output_size = (96, 112)
 #
-## get the normalized 5 landmarks position in the crop settings
-#normalized_5pts = get_normalized_5points(
+## get the referenced 5 landmarks position in the crop settings
+#reference_5pts = get_reference_facial_points(
 #    output_size, padding_factor, output_padding, output_square)
-normalized_5pts = None
+reference_5pts = None
 
-landmark_fn = r'../lfw-mtcnn-fd-rlt/lfw-mtcnn-v2-matlab-fd-rlt-3imgs.json'
+#landmark_fn = r'../lfw-mtcnn-fd-rlt/lfw-mtcnn-v2-matlab-fd-rlt-3imgs.json'
+landmark_fn = r'../lfw-mtcnn-fd-rlt/lfw_mtcnn_falied3_align_rlt.json'
+
 img_root_dir = r'C:/zyf/dataset/lfw'
 #landmark_fn = r'../../lfw-mtcnn-fd-rlt/lfw_mtcnn_fd_rlt_kirk_plus_failed3.json'
 #img_root_dir = r'/disk2/data/FACE/LFW/LFW'
-aligned_save_dir = img_root_dir + '-mtcnn-aligned-matlab-96x112'
+aligned_save_dir = img_root_dir + '-mtcnn-simaligned-96x112'
 
 log_fn1 = 'align_succeeded_list.txt'
 log_fn2 = 'align_failed_list.txt'
@@ -128,11 +130,12 @@ else:
             image = cv2.imread(img_fn, True)
 
             dst_img = warp_and_crop_face(
-                image, facial5points, normalized_5pts, output_size)
+                image, facial5points, reference_5pts, output_size)
             cv2.imwrite(save_fn, dst_img)
-        except:
+        except Exception as e:
             fp_log2.write(item['filename'] + ': ' +
-                          "exception when loading image or aligning faces or saving results" + '\n')
+                          "exception when loading image or aligning faces or saving results"+'\n')
+            fp_log2.write("\texception: {}".format(e) +'\n')
             continue
 
         fp_log1.write(item['filename'] + ': ' + " succeeded to align" + '\n')
