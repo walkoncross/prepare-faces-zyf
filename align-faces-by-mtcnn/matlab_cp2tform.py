@@ -353,6 +353,7 @@ def findSimilarity(uv, xy, options=None):
         @option: not used, keep it as None
 
     Returns:
+    ----------
         @trans: 3x3 np.array
             transform matrix from uv to xy
         @trans_inv: 3x3 np.array
