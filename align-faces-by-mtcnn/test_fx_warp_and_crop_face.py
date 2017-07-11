@@ -28,7 +28,9 @@ facial5points = [[ 105.8306,  109.8005],
        [ 144.3622,  156.3451]
        ];
 
-def test(img_fn, facial5points, normalized_facial_points=None, output_size=(112,96)):
+def test(img_fn, facial5points,
+         normalized_facial_points=None,
+         output_size=(96,112)):
     print('Loading image {}'.format(img_fn))
     image = cv2.imread(img_fn, True);
 
@@ -41,7 +43,9 @@ def test(img_fn, facial5points, normalized_facial_points=None, output_size=(112,
     plt.imshow(image_show)
     #dst_img = transform_and_crop_face(image, facial5points, coord5points, imgSize)
 
-    dst_img = warp_and_crop_face(image, facial5points, normalized_facial_points, output_size)
+    dst_img = warp_and_crop_face(image, facial5points,
+                                 normalized_facial_points,
+                                 output_size)
     print 'warped image shape: ', dst_img.shape
 
     dst_img_show = dst_img[...,::-1]# swap BGR to RGB to show image by pyplot

@@ -10,6 +10,8 @@ import cv2
 # from scipy.linalg import lstsq
 # from scipy.ndimage import geometric_transform  # , map_coordinates
 
+from matlab_cp2tform import get_similarity_transform_for_cv2
+
 dft_normalized_5points = [
     [30.29459953,  51.69630051],
     [65.53179932,  51.50139999],
@@ -60,6 +62,9 @@ def get_normalized_5points(output_size, padding_factor=0.0,
 
 
 def _get_transform_matrix(src_pts, dst_pts):
+    """
+
+    """
     tfm = np.float32([[1, 0, 0], [0, 1, 0]])
     n_pts = src_pts.shape[0]
     ones = np.ones((n_pts, 1), src_pts.dtype)
@@ -98,21 +103,30 @@ def warp_and_crop_face(src_img, facial_pts,
 
     pts_dst = np.float32(normalized_pts)
     if pts_dst.shape[0] == 2:
-        pts_dst = pts_dst.transpose()
+        pts_dst = pts_dst.T
 
     pts_src = np.float32(facial_pts)
     if pts_src.shape[0] == 2:
-        pts_src = pts_src.transpose()
+        pts_src = pts_src.T
 
 #    tfm = cv2.getAffineTransform(pts_src[0:3], pts_dst[0:3])
 #    print('cv2.getAffineTransform returns tfm=\n' + str(tfm))
 #    print('type(tfm):' + str(type(tfm)))
 #    print('tfm.dtype:' + str(tfm.dtype))
 
-    tfm = _get_transform_matrix(pts_src, pts_dst)
+#    tfm = _get_transform_matrix(pts_src, pts_dst)
 #    print('_get_transform_matrix returns tfm=\n' + str(tfm))
 #    print('type(tfm):' + str(type(tfm)))
 #    print('tfm.dtype:' + str(tfm.dtype))
+
+
+    tfm = get_similarity_transform_for_cv2(pts_src, pts_dst)
+#    print('_get_transform_matrix returns tfm=\n' + str(tfm))
+#    print('type(tfm):' + str(type(tfm)))
+#    print('tfm.dtype:' + str(tfm.dtype))
+
+    print '--->Transform matrix: '
+    print tfm
 
     dst_img = cv2.warpAffine(src_img, tfm, (crop_size[0], crop_size[1]))
 
@@ -150,3 +164,61 @@ if __name__ == '__main__':
         plt.scatter(normalized_5pts[:, 0], normalized_5pts[:, 1])
     except Exception as e:
         print 'Exception caught when trying to plot: ', e
+
+    img_fn = '../test_imgs/Jennifer_Aniston_0016.jpg'
+    #imgSize = [96, 112]; # cropped dst image size
+
+    # facial points in cropped dst image
+    #    coord5points = [[30.2946, 65.5318, 48.0252, 33.5493, 62.7299],
+    #                    [51.6963, 51.5014, 71.7366, 92.3655, 92.2041]];
+
+    # facial points in src image
+    #facial5points = [[105.8306, 147.9323, 121.3533, 106.1169, 144.3622],
+    #                 [109.8005, 112.5533, 139.1172, 155.6359, 156.3451]];
+    facial5points = [[ 105.8306,  109.8005],
+           [ 147.9323,  112.5533],
+           [ 121.3533,  139.1172],
+           [ 106.1169,  155.6359],
+           [ 144.3622,  156.3451]
+           ];
+
+    def test(img_fn, facial5points,
+             normalized_facial_points=None,
+             output_size=(96,112)):
+        print('Loading image {}'.format(img_fn))
+        image = cv2.imread(img_fn, True);
+
+        #for pt in pts_src[0:3]:
+        #    cv2.circle(image, (int(pt[0]), int(pt[1])), 3, (255, 255, 0), 1, 8, 0)
+
+        image_show = image[...,::-1]# swap BGR to RGB to show image by pyplot
+
+        plt.figure();
+        plt.imshow(image_show)
+        #dst_img = transform_and_crop_face(image, facial5points, coord5points, imgSize)
+
+        dst_img = warp_and_crop_face(image, facial5points,
+                                     normalized_facial_points,
+                                     output_size)
+        print 'warped image shape: ', dst_img.shape
+
+        dst_img_show = dst_img[...,::-1]# swap BGR to RGB to show image by pyplot
+
+        plt.figure()
+        plt.imshow(dst_img_show )
+
+    test(img_fn, facial5points)
+
+    # crop settings, set the region of cropped faces
+    output_square = True
+    padding_factor = 0.25
+    output_padding = (0, 0)
+    output_size = (224, 224)
+
+    # get the normalized 5 landmarks position in the crop settings
+    normalized_5pts = get_normalized_5points(
+        output_size, padding_factor, output_padding, output_square)
+    print normalized_5pts
+
+    test(img_fn, facial5points, normalized_5pts, output_size)
+

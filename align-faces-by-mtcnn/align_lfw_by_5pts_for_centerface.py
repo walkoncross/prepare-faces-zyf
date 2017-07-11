@@ -26,11 +26,11 @@ output_size = (96, 112)
 #    output_size, padding_factor, output_padding, output_square)
 normalized_5pts = None
 
-landmark_fn = r'../lfw-mtcnn-fd-rlt/lfw_mtcnn_falied3_align_rlt.json'
+landmark_fn = r'../lfw-mtcnn-fd-rlt/lfw-mtcnn-v2-matlab-fd-rlt-3imgs.json'
 img_root_dir = r'C:/zyf/dataset/lfw'
 #landmark_fn = r'../../lfw-mtcnn-fd-rlt/lfw_mtcnn_fd_rlt_kirk_plus_failed3.json'
 #img_root_dir = r'/disk2/data/FACE/LFW/LFW'
-aligned_save_dir = img_root_dir + '-mtcnn-aligned-96x112'
+aligned_save_dir = img_root_dir + '-mtcnn-aligned-matlab-96x112'
 
 log_fn1 = 'align_succeeded_list.txt'
 log_fn2 = 'align_failed_list.txt'
@@ -122,6 +122,7 @@ else:
 
         points = np.array(faces[max_idx]['pts'])
         facial5points = np.reshape(points, (2, -1))
+        #print facial5points
 
         try:
             image = cv2.imread(img_fn, True)
