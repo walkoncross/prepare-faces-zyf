@@ -35,11 +35,13 @@ reference_5pts = None
 #landmark_fn = r'../lfw-mtcnn-fd-rlt/lfw-mtcnn-v2-matlab-fd-rlt-3imgs.json'
 landmark_fn = r'../lfw-mtcnn-fd-rlt/lfw_mtcnn_falied3_align_rlt.json'
 #landmark_fn = r'../lfw-mtcnn-fd-rlt/lfw_mtcnn_fd_rlt_kirk_plus_failed3.json'
-
 img_root_dir = r'C:/zyf/dataset/lfw'
+
+#landmark_fn = r'../../lfw-mtcnn-fd-rlt/lfw-mtcnn-v2-matlab-fd-rlt-3imgs.json'
+#landmark_fn = r'../../lfw-mtcnn-fd-rlt/lfw_mtcnn_falied3_align_rlt.json'
 #landmark_fn = r'../../lfw-mtcnn-fd-rlt/lfw_mtcnn_fd_rlt_kirk_plus_failed3.json'
 #img_root_dir = r'/disk2/data/FACE/LFW/LFW'
-aligned_save_dir = img_root_dir + '-mtcnn-simaligned-96x112'
+aligned_save_dir = img_root_dir + '-mtcnn-simaligned-96x112-new'
 
 log_fn1 = 'align_succeeded_list.txt'
 log_fn2 = 'align_failed_list.txt'
@@ -52,10 +54,10 @@ def get_gt_overlap(faces):
     rects = [it['rect'] for it in faces]
 
     rects_arr = np.array(rects)
-    print 'rects_arr: {}'.format(rects_arr)
+#    print 'rects_arr: {}'.format(rects_arr)
     area = (rects_arr[:, 2] - rects_arr[:, 0] + 1) * \
         (rects_arr[:, 3] - rects_arr[:, 1] + 1)
-    print 'area: {}'.format(area)
+#    print 'area: {}'.format(area)
 
     o_x1 = np.maximum(GT_RECT[0], rects_arr[:, 0])
     o_x2 = np.minimum(GT_RECT[2], rects_arr[:, 2])
@@ -66,10 +68,10 @@ def get_gt_overlap(faces):
     o_h = np.maximum(0, o_y2 - o_y1 + 1)
 
     overlap = o_w * o_h
-    print 'overlap area: {}'.format(overlap)
+#    print 'overlap area: {}'.format(overlap)
 
     overlap = overlap / (GT_AREA + area - overlap)
-    print 'overlap ratio: {}'.format(overlap)
+#    print 'overlap ratio: {}'.format(overlap)
 
     return overlap
 
@@ -78,7 +80,7 @@ def get_max_gt_overlap_face(faces, thresh=0.5):
     overlap = get_gt_overlap(faces)
 
     max_id = overlap.argmax()
-    print 'overlap[max_id]: %1.3f' % overlap[max_id]
+#    print 'overlap[max_id]: %1.3f' % overlap[max_id]
     if overlap[max_id] >= thresh:
         return max_id
     else:
