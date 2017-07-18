@@ -18,7 +18,7 @@ GT_RECT = [68, 68, 182, 182]
 GT_AREA = (GT_RECT[2] - GT_RECT[0] + 1) * (GT_RECT[3] - GT_RECT[1] + 1)
 overlap_thresh = 0.3
 
-do_align = False
+do_align = True
 
 # crop settings, set the region of cropped faces
 output_square = True
@@ -30,8 +30,8 @@ roi_scale = 1.0 + padding_factor * 2
 
 
 #landmark_fn = r'../lfw-mtcnn-fd-rlt/lfw-mtcnn-v2-matlab-fd-rlt-3imgs.json'
-#landmark_fn = r'../lfw-mtcnn-fd-rlt/lfw_mtcnn_falied3_align_rlt.json'
-landmark_fn = r'../lfw-mtcnn-fd-rlt/lfw_mtcnn_fd_rlt_kirk_plus_failed3.json'
+landmark_fn = r'../lfw-mtcnn-fd-rlt/lfw_mtcnn_falied3_align_rlt.json'
+#landmark_fn = r'../lfw-mtcnn-fd-rlt/lfw_mtcnn_fd_rlt_kirk_plus_failed3.json'
 
 img_root_dir = r'C:/zyf/dataset/lfw'
 #webface_src_dir = r'/disk2/data/FACE/LFW/LFW'
