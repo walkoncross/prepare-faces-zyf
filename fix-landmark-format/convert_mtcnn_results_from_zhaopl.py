@@ -7,6 +7,8 @@ Created on Fri Jul 21 05:00:49 2017
 import json
 
 fn = './landmark_yrj_8imgs_wrong_correct.json'
+#fn = '../../webface-mtcnn-fd-rlt/landmark_correct.json'
+'
 fn_splits = fn.rsplit('.', 1)
 fn_out = fn_splits[0] + '_new_format.' + fn_splits[1]
 

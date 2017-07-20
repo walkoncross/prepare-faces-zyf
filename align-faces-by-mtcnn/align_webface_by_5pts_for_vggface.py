@@ -31,7 +31,7 @@ reference_5pts = get_reference_facial_points(
 
 landmark_fn = r'./landmark_yrj_8imgs_wrong_correct_new_format.json'
 img_root_dir = r'C:/zyf/dataset/webface/CASIA-maxpy-clean'
-#landmark_fn = r'../../webface-mtcnn-fd-rlt/landmark_yrj_8imgs.json'
+#landmark_fn = r'../../webface-mtcnn-fd-rlt/landmark_correct_new_format.json'
 #img_root_dir = r'/disk2/data/FACE/webface/CASIA-maxpy-clean'
 aligned_save_dir = img_root_dir + '_mtcnn_simaligned_224x224_for_vggface'
 
