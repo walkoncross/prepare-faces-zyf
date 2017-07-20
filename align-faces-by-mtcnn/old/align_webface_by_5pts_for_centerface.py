@@ -20,20 +20,22 @@ GT_AREA = (GT_RECT[2] - GT_RECT[0] + 1) * (GT_RECT[3] - GT_RECT[1] + 1)
 overlap_thresh = 0.3
 
 do_align = True
-output_square = True
-padding_factor = 0.25
-output_padding = (0, 0)
-output_size = (224, 224)
 
-reference_5pts = get_reference_facial_points(
-    output_size, padding_factor, output_padding, output_square)
-
-
-landmark_fn = r'./landmark_yrj_8imgs_wrong_correct_new_format.json'
+# crop settings, set the region of cropped faces
+#output_square = True
+#padding_factor = 0.25
+#output_padding = (0, 0)
+output_size = (96, 112)
+#
+# get the referenced 5 landmarks position in the crop settings
+# reference_5pts = get_reference_facial_points(
+#    output_size, padding_factor, output_padding, output_square)
+reference_5pts = None
+landmark_fn = r'./landmark_yrj_8imgs.json'
 img_root_dir = r'C:/zyf/dataset/webface/CASIA-maxpy-clean'
 #landmark_fn = r'../../webface-mtcnn-fd-rlt/landmark_yrj_8imgs.json'
 #img_root_dir = r'/disk2/data/FACE/webface/CASIA-maxpy-clean'
-aligned_save_dir = img_root_dir + '_mtcnn_simaligned_224x224_for_vggface'
+aligned_save_dir = img_root_dir + '-simaligned-new'
 
 log_fn1 = 'align_succeeded_list.txt'
 log_fn2 = 'align_failed_list.txt'
@@ -43,9 +45,9 @@ log_align_params = 'align_params.txt'
 
 
 def get_gt_overlap(faces):
-    rects = [it['rect'] for it in faces]
-
-    rects_arr = np.array(rects)
+#    rects = [it['rect'] for it in faces]
+#    rects_arr = np.array(rects)
+    rects_arr = faces
 #    print 'rects_arr: {}'.format(rects_arr)
     area = (rects_arr[:, 2] - rects_arr[:, 0] + 1) * \
         (rects_arr[:, 3] - rects_arr[:, 1] + 1)
@@ -77,6 +79,7 @@ def get_max_gt_overlap_face(faces, thresh=0.5):
         return max_id
     else:
         return -1
+
 fp_in = open(landmark_fn, 'r')
 img_list = json.load(fp_in)
 fp_in.close()
@@ -133,32 +136,33 @@ else:
 
         print('===> Processing image: ' + img_fn)
 
-        if 'faces' not in item:
-            err_msg = "'faces' not in item"
-            fp_log2.write(item['filename'] + ': ' + err_msg + '\n')
+        if 'total_boxes' not in item:
+            err_msg = "'total_boxes' not in item"
+            fp_log2.write(item['filename'] + ': ' + err_msg +'\n')
             continue
-        elif 'face_count' not in item:
-            err_msg = "'face_count' not in item"
-            fp_log2.write(item['filename'] + ': ' + err_msg + '\n')
+        elif 'points' not in item:
+            err_msg = "'points' not in item"
+            fp_log2.write(item['filename'] + ': ' + err_msg +'\n')
             continue
 
         if do_align and not osp.exists(save_fn_dir):
             os.makedirs(save_fn_dir)
 
-        nfaces = item['face_count']
+        nfaces = len(item['total_boxes'])
 
         if nfaces < 1:
-            fp_log2.write(item['filename'] + ': ' +
-                          "item['face_count'] < 1" + '\n')
+            fp_log2.write(item['filename'] + ': ' + "nfaces < 1"+'\n')
             continue
 
-        if nfaces != len(item['faces']):
-            fp_log2.write(item['filename'] + ': ' +
-                          "item['face_count'] != len(item['faces']" + '\n')
+        if nfaces != len(item['points']):
+            fp_log2.write(item['filename'] + ': ' + "nfaces != len(item['points']"+'\n')
             continue
 
-        faces = item['faces']
-        scores = np.array([it['score'] for it in faces])
+        faces = np.array(item['total_boxes'])
+#        print 'faces.shape: ', faces.shape
+        pts_list = item['points']
+        scores = faces[:, 4].reshape(-1, 1)
+#        print 'scores.shape: ', scores.shape
         max_score_idx = scores.argmax()
 
 #        max_score_idx = 0
@@ -183,7 +187,7 @@ else:
             fp_log1.write(item['filename'] + ': ' + " max_overlap_idx="
                           + str(max_overlap_idx) + '\n')
             if do_align:
-                points = np.array(faces[max_overlap_idx]['pts'])
+                points = np.array(pts_list[max_overlap_idx])
                 facial5points = np.reshape(points, (2, -1))
                 # print facial5points
 
