@@ -37,9 +37,10 @@ img_root_dir = r'C:/zyf/dataset/lfw'
 #landmark_fn = r'../../lfw-mtcnn-fd-rlt/lfw-mtcnn-v2-matlab-fd-rlt-3imgs.json'
 #landmark_fn = r'../../lfw-mtcnn-fd-rlt/lfw_mtcnn_falied3_align_rlt.json'
 #landmark_fn = r'../../lfw-mtcnn-fd-rlt/lfw_mtcnn_fd_rlt_kirk_plus_failed3.json'
+#landmark_fn = r'../../lfw-mtcnn-fd-rlt/lfw_mtcnn_4nets_fd_rlt_add_missed.json'
 #img_root_dir = r'/disk2/data/FACE/LFW/LFW'
 
-aligned_save_dir = img_root_dir + '-aligned-nowarp-224x224-new'
+aligned_save_dir = img_root_dir + '-aligned-nowarp-224x224-new-4nets'
 
 log_fn1 = 'align_succeeded_list.txt'
 log_fn2 = 'align_failed_list.txt'
