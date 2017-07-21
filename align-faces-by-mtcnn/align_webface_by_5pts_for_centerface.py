@@ -19,6 +19,7 @@ GT_RECT = [68, 68, 182, 182]
 GT_AREA = (GT_RECT[2] - GT_RECT[0] + 1) * (GT_RECT[3] - GT_RECT[1] + 1)
 overlap_thresh = 0.3
 
+only_align_missed = False
 do_align = True
 
 # crop settings, set the region of cropped faces
@@ -84,6 +85,9 @@ fp_in = open(landmark_fn, 'r')
 img_list = json.load(fp_in)
 fp_in.close()
 
+if only_align_missed:
+    print('Only process missed faces!!!')
+
 if not osp.exists(img_root_dir):
     print('ERROR: webface root dir not found!!!')
 
@@ -144,6 +148,11 @@ else:
             err_msg = "'face_count' not in item"
             fp_log2.write(item['filename'] + ': ' + err_msg + '\n')
             continue
+
+        if only_align_missed and 'used_gt' not in item:
+            print('skipped because only_align_missed')
+            continue
+
 
         if do_align and not osp.exists(save_fn_dir):
             os.makedirs(save_fn_dir)

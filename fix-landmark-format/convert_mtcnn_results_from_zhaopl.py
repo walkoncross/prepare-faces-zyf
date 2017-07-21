@@ -8,7 +8,7 @@ import json
 
 fn = './landmark_yrj_8imgs_wrong_correct.json'
 #fn = '../../webface-mtcnn-fd-rlt/landmark_correct.json'
-'
+
 fn_splits = fn.rsplit('.', 1)
 fn_out = fn_splits[0] + '_new_format.' + fn_splits[1]
 
@@ -25,26 +25,24 @@ for it in old_json_list:
     cnt = len(total_faces_list)
 
     new_faces_list = []
-    if cnt>0:
+    if cnt > 0:
         for i in range(cnt):
             new_faces_list.append(
-                    {
-                        'score': total_faces_list[i][4],
-                        'rect': total_faces_list[i][:4],
-                        'pts': points_list[i]
-                    }
-                    )
+                {
+                    'score': total_faces_list[i][4],
+                    'rect': total_faces_list[i][:4],
+                    'pts': points_list[i]
+                }
+            )
     new_item = {
-
-            'filename': it['filename'],
-            'id': it['id'],
-            'face_count': cnt,
-            'faces': new_faces_list,
-            'message': "success"
-            }
+        'filename': it['filename'],
+        'id': it['id'],
+        'face_count': cnt,
+        'faces': new_faces_list
+        }
     new_json_list.append(new_item)
 
-json.dump(new_json_list, fp_out, indent=4)
+json.dump(new_json_list, fp_out, indent=2)
 
 fp_in.close()
 fp_out.close()
