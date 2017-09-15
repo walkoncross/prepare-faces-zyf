@@ -89,10 +89,12 @@ for item in img_list:
 
     img_fn = osp.join(img_root_dir, item['filename'])
 
-    save_fn = osp.join(aligned_save_dir, osp.basename(item['filename']))
+    #save_fn = osp.join(aligned_save_dir, osp.basename(item['filename']))
+    save_fn = osp.join(aligned_save_dir,item['filename'])
     save_fn_dir = osp.dirname(save_fn)
 
-    save_fn2 = osp.join(aligned_save_dir2, osp.basename(item['filename']))
+    #save_fn2 = osp.join(aligned_save_dir2, osp.basename(item['filename']))
+    save_fn2 = osp.join(aligned_save_dir2, item['filename'])
     save_fn_dir2 = osp.dirname(save_fn2)
 
     print('===> Processing image: ' + img_fn)
