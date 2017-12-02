@@ -66,7 +66,7 @@ for line in fp:
 
         if val_ll < 1:
             for f in tmp_list:
-                fp_train.write('%s %d\n' % (f, idx))
+                fp_train.write('%s %d\n' % (f, start_id))
                 train_cnt += 1
 
             train_ids_cnt += 1
@@ -94,20 +94,30 @@ for line in fp:
         fp_val.flush()
 
 if tmp_list:
-    all_idx = range(ll)
-    random.shuffle(all_idx)
-    val_idx = sorted(all_idx[0:val_ll])
-    train_idx = sorted(all_idx[val_ll:])
+    ll = len(tmp_list)
+    val_ll = int(ll * val_ratio)
 
-    for k in val_idx:
-        fp_val.write('%s %d\n' % (tmp_list[k], start_id))
-        val_cnt += 1
-    val_ids_cnt += 1
+    if val_ll < 1:
+        for f in tmp_list:
+            fp_train.write('%s %d\n' % (f, idx))
+            train_cnt += 1
 
-    for k in train_idx:
-        fp_train.write('%s %d\n' % (tmp_list[k], start_id))
-        train_cnt += 1
-    train_ids_cnt += 1
+        train_ids_cnt += 1
+    else:    
+        all_idx = range(ll)
+        random.shuffle(all_idx)
+        val_idx = sorted(all_idx[0:val_ll])
+        train_idx = sorted(all_idx[val_ll:])
+
+        for k in val_idx:
+            fp_val.write('%s %d\n' % (tmp_list[k], start_id))
+            val_cnt += 1
+        val_ids_cnt += 1
+
+        for k in train_idx:
+            fp_train.write('%s %d\n' % (tmp_list[k], start_id))
+            train_cnt += 1
+        train_ids_cnt += 1
 
 fp_train.close()
 fp_val.close()
