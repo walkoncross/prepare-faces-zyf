@@ -148,7 +148,7 @@ else:
 
         overlap_thresh_0 = overlap_thresh
 
-        ## Tom_Brady_0002 is special cauz the face in the image is very small
+        # Tom_Brady_0002 is special cauz the face in the image is very small
         if 'Tom_Brady_0002' in img_fn:
             overlap_thresh_0 = 0.25
 
@@ -166,7 +166,6 @@ else:
         if only_align_missed and 'used_gt' not in item:
             print('skipped because only_align_missed')
             continue
-
 
         if do_align and not osp.exists(save_fn_dir):
             os.makedirs(save_fn_dir)
