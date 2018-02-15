@@ -36,8 +36,8 @@ reference_5pts = get_reference_facial_points(
 
 aligned_save_dir = '/disk2/data/FACE/gender-lablex/gender_mtcnn_simaligned_112x112'
 # json_root_path = '/disk2/data/FACE/gender-lablex/face-rects-json-mtcnn'
-json_root_path = '/disk2/data/FACE/gender-lablex/gender_original_labelx_20170808/img'
-img_root_dir = '/disk2/data/FACE/gender-lablex/gender_original_labelx_20170808/label'
+json_root_path = '/disk2/data/FACE/gender-lablex/gender_original_labelx_20170808/label'
+img_root_dir = '/disk2/data/FACE/gender-lablex/gender_original_labelx_20170808/img'
 
 if not osp.exists(json_root_path):
     print('ERROR: webface root dir not found!!!')
@@ -52,19 +52,20 @@ else:
     for root, dirs, files in os.walk(json_root_path):
         for file in files[start_cnt:]:
             err_msg = ''
-            print file
             json_fn = osp.join(json_root_path, file)
-            print json_fn
+            print '===> Load json file: ', json_fn
             f = open(json_fn, 'r')
             count = count + 1
             print count
             data = json.load(f)
+            f.close()
 
             img_fn = data['imgname']
             base_name = osp.splitext(img_fn)[0]
             image = cv2.imread(osp.join(img_root_dir), img_fn)
 
             for i, det in enumerate(data['detect']):
+                print('---> Processing face #%d', i)
                 subdir = det["class"]
                 filename = base_name + '_%d.jpg' % i
                 # print filename
@@ -75,7 +76,6 @@ else:
                 if do_align and not osp.exists(save_fn_dir):
                     os.makedirs(save_fn_dir)
 
-                print('===> Processing image: ' + json_fn)
 
                 points = np.array(det["pts"])
                 facial5points = np.reshape(points, (2, -1)).T
