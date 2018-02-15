@@ -15,6 +15,7 @@ import urllib
 from skimage import io
 
 #from matplotlib import pyplot as plt
+import _init_paths
 from fx_warp_and_crop_face import get_reference_facial_points, warp_and_crop_face
 
 #GT_RECT = [68, 68, 182, 182]
@@ -46,13 +47,13 @@ reference_5pts = None
 #landmark_fn = r'../../lfw-mtcnn-fd-rlt/lfw_mtcnn_4nets_fd_rlt_add_missed.json'
 #img_root_dir = r'/disk2/data/FACE/LFW/LFW'
 #aligned_save_dir = img_root_dir + '-mtcnn-simaligned-96x112-new-4nets'
-aligned_save_dir = './crop_data'
+aligned_save_dir = '../vggface-mtcnn-simaligned-96x112'
 
 log_fn1 = 'align_succeeded_list-0.txt'
 log_fn2 = 'align_failed_list-0.txt'
 log_fn3 = 'faces_wrong_max_score_idx_list-0.txt'
 
-file_root_path = '../../mtcnn-caffe-good/mtcnn_aligner/fd_json_add_missed/result_after_miss/'
+file_root_path = '../../../mtcnn-caffe-good/mtcnn_aligner/fd_json_add_missed/result_after_miss/'
 
 log_align_params = 'align_params.txt'
 

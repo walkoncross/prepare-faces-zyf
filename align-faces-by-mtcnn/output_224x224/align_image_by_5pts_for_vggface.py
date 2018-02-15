@@ -13,6 +13,7 @@ import os
 import os.path as osp
 
 #from matplotlib import pyplot as plt
+import _init_paths
 from fx_warp_and_crop_face import get_reference_facial_points, warp_and_crop_face
 
 # crop settings, set the region of cropped faces
@@ -26,8 +27,8 @@ referenced_5pts = get_reference_facial_points(
     output_size, padding_factor, output_padding, output_square)
 
 img_root_dir = ''
-landmark_fn = r'./mtcnn_fd_rlt_test_imgs.json'
-aligned_save_dir = './faces' + '-mtcnn-aligned-224x224'
+landmark_fn = r'../mtcnn_fd_rlt_test_imgs.json'
+aligned_save_dir = '../faces' + '-mtcnn-aligned-224x224'
 
 log_fn1 = 'align_succeeded_list.txt'
 log_fn2 = 'align_failed_list.txt'

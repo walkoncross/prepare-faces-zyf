@@ -13,7 +13,8 @@ import os
 import os.path as osp
 
 #from matplotlib import pyplot as plt
-from fx_warp_and_crop_face import get_reference_facial_points, warp_and_crop_face, FaceWarpException
+import _init_paths
+from fx_warp_and_crop_face import get_reference_facial_points, warp_and_crop_face
 
 GT_RECT = [68, 68, 182, 182]
 GT_AREA = (GT_RECT[2] - GT_RECT[0] + 1) * (GT_RECT[3] - GT_RECT[1] + 1)
@@ -32,11 +33,19 @@ output_size = (96, 112)
 # reference_5pts = get_reference_facial_points(
 #    output_size, padding_factor, output_padding, output_square)
 reference_5pts = None
-landmark_fn = r'./landmark_yrj_8imgs_wrong_correct_new_format.json'
-img_root_dir = r'C:/zyf/dataset/webface/CASIA-maxpy-clean'
-#landmark_fn = r'../../webface-mtcnn-fd-rlt/landmark_correct_new_format_add_missed.json'
-#img_root_dir = r'/disk2/data/FACE/webface/CASIA-maxpy-clean'
-aligned_save_dir = img_root_dir + '_mtcnn_simaligned_96x112_for_centerface'
+
+#landmark_fn = r'../lfw-mtcnn-fd-rlt/lfw-mtcnn-v2-matlab-fd-rlt-3imgs.json'
+landmark_fn = r'../../../lfw-seeta-fd-rlt/lfw_seeta_fd_rlt.json'
+#landmark_fn = r'../lfw-mtcnn-fd-rlt/lfw_mtcnn_fd_rlt_kirk_plus_failed3.json'
+img_root_dir = r'/disk2/data/FACE/LFW/LFW'
+#img_root_dir = r'C:/zyf/dataset/lfw'
+
+#landmark_fn = r'../../lfw-mtcnn-fd-rlt/lfw-mtcnn-v2-matlab-fd-rlt-3imgs.json'
+#landmark_fn = r'../../lfw-mtcnn-fd-rlt/lfw_mtcnn_falied3_align_rlt.json'
+#landmark_fn = r'../../lfw-mtcnn-fd-rlt/lfw_mtcnn_fd_rlt_kirk_plus_failed3.json'
+#landmark_fn = r'../../lfw-mtcnn-fd-rlt/lfw_mtcnn_4nets_fd_rlt_add_missed.json'
+#img_root_dir = r'/disk2/data/FACE/LFW/LFW'
+aligned_save_dir = img_root_dir + '-seeta-simaligned-96x112'
 
 log_fn1 = 'align_succeeded_list.txt'
 log_fn2 = 'align_failed_list.txt'
@@ -48,22 +57,25 @@ log_align_params = 'align_params.txt'
 def get_gt_overlap(faces):
     rects = [it['rect'] for it in faces]
 
-    rects_arr = np.array(rects)
+    rects_arr = np.array(rects, dtype=np.float32)
+#    rects_arr[:, 2] = rects_arr[:, 2] + rects_arr[:, 0]
+#    rects_arr[:, 3] = rects_arr[:, 3] + rects_arr[:, 1]
 #    print 'rects_arr: {}'.format(rects_arr)
-    area = (rects_arr[:, 2] - rects_arr[:, 0] + 1) * \
-        (rects_arr[:, 3] - rects_arr[:, 1] + 1)
+#    area = (rects_arr[:, 2] - rects_arr[:, 0] + 1) * \
+#        (rects_arr[:, 3] - rects_arr[:, 1] + 1)
+    area = (rects_arr[:, 2] * rects_arr[:, 3])
 #    print 'area: {}'.format(area)
 
     o_x1 = np.maximum(GT_RECT[0], rects_arr[:, 0])
-    o_x2 = np.minimum(GT_RECT[2], rects_arr[:, 2])
+    o_x2 = np.minimum(GT_RECT[2], rects_arr[:, 2]+rects_arr[:, 0])
     o_y1 = np.maximum(GT_RECT[1], rects_arr[:, 1])
-    o_y2 = np.minimum(GT_RECT[3], rects_arr[:, 3])
+    o_y2 = np.minimum(GT_RECT[3], rects_arr[:, 3]+rects_arr[:, 1])
 
     o_w = np.maximum(0, o_x2 - o_x1 + 1)
     o_h = np.maximum(0, o_y2 - o_y1 + 1)
 
     overlap = o_w * o_h
-#    print 'overlap area: {}'.format(overlap)
+    print 'overlap area: {}'.format(overlap)
 
     overlap = overlap / (GT_AREA + area - overlap)
 #    print 'overlap ratio: {}'.format(overlap)
@@ -80,6 +92,7 @@ def get_max_gt_overlap_face(faces, thresh=0.5):
         return max_id
     else:
         return -1
+
 
 fp_in = open(landmark_fn, 'r')
 img_list = json.load(fp_in)
@@ -138,6 +151,12 @@ else:
         save_fn = osp.join(aligned_save_dir, item['filename'])
         save_fn_dir = osp.dirname(save_fn)
 
+        overlap_thresh_0 = overlap_thresh
+
+        ## Tom_Brady_0002 is special cauz the face in the image is very small
+        if 'Tom_Brady_0002' in img_fn:
+            overlap_thresh_0 = 0.25
+
         print('===> Processing image: ' + img_fn)
 
         if 'faces' not in item:
@@ -191,12 +210,13 @@ else:
             fp_log3.write("--> scores   = {}\n".format(scores))
             fp_log3.write("--> overlaps = {}\n".format(overlaps))
 
-        if overlaps[max_overlap_idx] >= overlap_thresh:
+        if overlaps[max_overlap_idx] >= overlap_thresh_0:
             fp_log1.write(item['filename'] + ': ' + " max_overlap_idx="
                           + str(max_overlap_idx) + '\n')
             if do_align:
                 points = np.array(faces[max_overlap_idx]['pts'])
-                facial5points = np.reshape(points, (2, -1))
+                #facial5points = np.reshape(points, (2, -1))
+                facial5points = np.reshape(points, (-1, 2))
                 # print facial5points
 
                 try:
@@ -220,7 +240,7 @@ else:
 
             fp_log2.write(item['filename'] + ': ' +
                           "no faces have overlap>={} with groundtruth".format(
-                              overlap_thresh) +
+                              overlap_thresh_0) +
                           '\n')
             fp_log2.write("--> max_score_idx   = {}\n".format(max_score_idx))
             fp_log2.write("--> max_overlap_idx = {}\n".format(max_overlap_idx))

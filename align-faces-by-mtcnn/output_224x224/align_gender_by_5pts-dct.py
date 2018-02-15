@@ -14,6 +14,7 @@ import os.path as osp
 from skimage import io
 
 #from matplotlib import pyplot as plt
+import _init_paths
 from fx_warp_and_crop_face import get_reference_facial_points, warp_and_crop_face
 
 #GT_RECT = [68, 68, 182, 182]
@@ -34,7 +35,7 @@ reference_5pts = get_reference_facial_points(
     output_size, padding_factor, output_padding, output_square)
 
 aligned_save_dir = './gender_crop_data'
-file_root_path = '../../mtcnn-caffe-good/mtcnn_aligner/result_after_align/'
+file_root_path = '../../../mtcnn-caffe-good/mtcnn_aligner/result_after_align/'
 
 
 if not osp.exists(file_root_path):

@@ -13,7 +13,8 @@ import os
 import os.path as osp
 
 #from matplotlib import pyplot as plt
-from fx_warp_and_crop_face import get_reference_facial_points, warp_and_crop_face
+import _init_paths
+from fx_warp_and_crop_face import get_reference_facial_points, warp_and_crop_face, FaceWarpException
 
 GT_RECT = [68, 68, 182, 182]
 GT_AREA = (GT_RECT[2] - GT_RECT[0] + 1) * (GT_RECT[3] - GT_RECT[1] + 1)
@@ -21,29 +22,20 @@ overlap_thresh = 0.3
 
 only_align_missed = False
 do_align = True
+output_square = True
+padding_factor = 0
+output_padding = (0, 0)
+output_size = (112, 112)
 
-# crop settings, set the region of cropped faces
-#output_square = True
-#padding_factor = 0.25
-#output_padding = (0, 0)
-output_size = (96, 112)
-#
-# get the referenced 5 landmarks position in the crop settings
-# reference_5pts = get_reference_facial_points(
-#    output_size, padding_factor, output_padding, output_square)
-reference_5pts = None
+reference_5pts = get_reference_facial_points(
+    output_size, padding_factor, output_padding, output_square)
 
-#landmark_fn = r'../lfw-mtcnn-fd-rlt/lfw-mtcnn-v2-matlab-fd-rlt-3imgs.json'
-landmark_fn = r'../lfw-mtcnn-fd-rlt/lfw_mtcnn_falied3_align_rlt.json'
-#landmark_fn = r'../lfw-mtcnn-fd-rlt/lfw_mtcnn_fd_rlt_kirk_plus_failed3.json'
-img_root_dir = r'C:/zyf/dataset/lfw'
 
-#landmark_fn = r'../../lfw-mtcnn-fd-rlt/lfw-mtcnn-v2-matlab-fd-rlt-3imgs.json'
-#landmark_fn = r'../../lfw-mtcnn-fd-rlt/lfw_mtcnn_falied3_align_rlt.json'
-#landmark_fn = r'../../lfw-mtcnn-fd-rlt/lfw_mtcnn_fd_rlt_kirk_plus_failed3.json'
-#landmark_fn = r'../../lfw-mtcnn-fd-rlt/lfw_mtcnn_4nets_fd_rlt_add_missed.json'
-#img_root_dir = r'/disk2/data/FACE/LFW/LFW'
-aligned_save_dir = img_root_dir + '-mtcnn-simaligned-96x112-new-4nets'
+landmark_fn = r'../landmark_yrj_8imgs_wrong_correct_new_format.json'
+img_root_dir = r'C:/zyf/dataset/webface/CASIA-maxpy-clean'
+#landmark_fn = r'../../webface-mtcnn-fd-rlt/landmark_correct_new_format_add_missed.json'
+#img_root_dir = r'/disk2/data/FACE/webface/CASIA-maxpy-clean'
+aligned_save_dir = img_root_dir + '_mtcnn_simaligned_112x112'
 
 log_fn1 = 'align_succeeded_list.txt'
 log_fn2 = 'align_failed_list.txt'
@@ -87,8 +79,6 @@ def get_max_gt_overlap_face(faces, thresh=0.5):
         return max_id
     else:
         return -1
-
-
 fp_in = open(landmark_fn, 'r')
 img_list = json.load(fp_in)
 fp_in.close()
@@ -146,12 +136,6 @@ else:
         save_fn = osp.join(aligned_save_dir, item['filename'])
         save_fn_dir = osp.dirname(save_fn)
 
-        overlap_thresh_0 = overlap_thresh
-
-        # Tom_Brady_0002 is special cauz the face in the image is very small
-        if 'Tom_Brady_0002' in img_fn:
-            overlap_thresh_0 = 0.25
-
         print('===> Processing image: ' + img_fn)
 
         if 'faces' not in item:
@@ -166,6 +150,7 @@ else:
         if only_align_missed and 'used_gt' not in item:
             print('skipped because only_align_missed')
             continue
+
 
         if do_align and not osp.exists(save_fn_dir):
             os.makedirs(save_fn_dir)
@@ -204,7 +189,7 @@ else:
             fp_log3.write("--> scores   = {}\n".format(scores))
             fp_log3.write("--> overlaps = {}\n".format(overlaps))
 
-        if overlaps[max_overlap_idx] >= overlap_thresh_0:
+        if overlaps[max_overlap_idx] >= overlap_thresh:
             fp_log1.write(item['filename'] + ': ' + " max_overlap_idx="
                           + str(max_overlap_idx) + '\n')
             if do_align:
@@ -233,7 +218,7 @@ else:
 
             fp_log2.write(item['filename'] + ': ' +
                           "no faces have overlap>={} with groundtruth".format(
-                              overlap_thresh_0) +
+                              overlap_thresh) +
                           '\n')
             fp_log2.write("--> max_score_idx   = {}\n".format(max_score_idx))
             fp_log2.write("--> max_overlap_idx = {}\n".format(max_overlap_idx))

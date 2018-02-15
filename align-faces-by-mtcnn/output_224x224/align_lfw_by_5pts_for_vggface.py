@@ -13,6 +13,7 @@ import os
 import os.path as osp
 
 #from matplotlib import pyplot as plt
+import _init_paths
 from fx_warp_and_crop_face import get_reference_facial_points, warp_and_crop_face
 
 GT_RECT = [68, 68, 182, 182]
@@ -34,7 +35,7 @@ reference_5pts = get_reference_facial_points(
 
 
 #landmark_fn = r'../lfw-mtcnn-fd-rlt/lfw-mtcnn-v2-matlab-fd-rlt-3imgs.json'
-landmark_fn = r'../lfw-mtcnn-fd-rlt/lfw_mtcnn_falied3_align_rlt.json'
+landmark_fn = r'../../lfw-mtcnn-fd-rlt/lfw_mtcnn_falied3_align_rlt.json'
 #landmark_fn = r'../lfw-mtcnn-fd-rlt/lfw_mtcnn_fd_rlt_kirk_plus_failed3.json'
 img_root_dir = r'C:/zyf/dataset/lfw'
 
