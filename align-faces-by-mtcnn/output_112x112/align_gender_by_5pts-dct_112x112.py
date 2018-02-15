@@ -11,7 +11,7 @@ import cv2
 import json
 import os
 import os.path as osp
-from skimage import io
+# from skimage import io
 
 #from matplotlib import pyplot as plt
 import _init_paths
@@ -35,45 +35,53 @@ reference_5pts = get_reference_facial_points(
     output_size, padding_factor, outer_padding, default_square)
 
 aligned_save_dir = '/disk2/data/FACE/gender-lablex/gender_mtcnn_simaligned_112x112'
-file_root_path = '/disk2/data/FACE/gender-lablex/face-rects-json-mtcnn'
+# json_root_path = '/disk2/data/FACE/gender-lablex/face-rects-json-mtcnn'
+json_root_path = '/disk2/data/FACE/gender-lablex/gender_original_labelx_20170808/img'
+img_root_dir = '/disk2/data/FACE/gender-lablex/gender_original_labelx_20170808/label'
 
-
-if not osp.exists(file_root_path):
+if not osp.exists(json_root_path):
     print('ERROR: webface root dir not found!!!')
 
 else:
     if not osp.exists(aligned_save_dir):
         print('mkdir for aligned faces, aligned root dir: ', aligned_save_dir)
         os.makedirs(aligned_save_dir)
- 
+
     start_cnt = 0
     count = start_cnt
-    for root, dirs, files in os.walk(file_root_path):
+    for root, dirs, files in os.walk(json_root_path):
         for file in files[start_cnt:]:
             err_msg = ''
             print file
-            json_fn = osp.join(file_root_path, file)
+            json_fn = osp.join(json_root_path, file)
             print json_fn
-	    f = open(json_fn,'r')
+            f = open(json_fn, 'r')
             count = count + 1
             print count
-	    data=json.load(f)
-            subdir=data["class"]
-            filename = file[:-5]+'.jpg'
-            #print filename
-            save_fn = osp.join(aligned_save_dir,subdir,filename)
-            #print save_fn
-            save_fn_dir = osp.dirname(save_fn)
-            print save_fn_dir
-            if do_align and not osp.exists(save_fn_dir):
-                os.makedirs(save_fn_dir)
+            data = json.load(f)
 
-            print('===> Processing image: ' + json_fn)
+            img_fn = data['imgname']
+            base_name = osp.splitext(img_fn)[0]
+            image = cv2.imread(osp.join(img_root_dir), img_fn)
 
-            points = np.array(data["detect"]["pts"])
-            facial5points = np.reshape(points, (2, -1))
+            for i, det in enumerate(data['detect']):
+                subdir = det["class"]
+                filename = base_name + '_%d.jpg' % i
+                # print filename
+                save_fn = osp.join(aligned_save_dir, subdir, filename)
+                # print save_fn
+                save_fn_dir = osp.dirname(save_fn)
+                # print save_fn_dir
+                if do_align and not osp.exists(save_fn_dir):
+                    os.makedirs(save_fn_dir)
 
-            imageBGR = io.imread(data[u'url'])
-            image = cv2.cvtColor(imageBGR, cv2.COLOR_BGR2RGB) 
-            dst_img = warp_and_crop_face(image, facial5points, reference_5pts, output_size)
-            cv2.imwrite(save_fn, dst_img)
+                print('===> Processing image: ' + json_fn)
+
+                points = np.array(det["pts"])
+                facial5points = np.reshape(points, (2, -1)).T
+
+                # imageBGR = io.imread(data[u'url'])
+                # image = cv2.cvtColor(imageBGR, cv2.COLOR_BGR2RGB)
+                dst_img = warp_and_crop_face(
+                    image, facial5points, reference_5pts, output_size)
+                cv2.imwrite(save_fn, dst_img)
