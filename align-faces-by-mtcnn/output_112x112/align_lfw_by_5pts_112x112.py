@@ -36,7 +36,7 @@ reference_5pts = None
 
 #landmark_fn = r'../lfw-mtcnn-fd-rlt/lfw-mtcnn-v2-matlab-fd-rlt-3imgs.json'
 # landmark_fn = r'../../lfw-mtcnn-fd-rlt/lfw_mtcnn_fd_rlt.json'
-landmark_fn = r'../../lfw-mtcnn-fd-rlt/lfw_mtcnn_fd_rlt_kirk_plus_failed3.json'
+landmark_fn = r'/disk2/zhaoyafei/lfw-mtcnn-fd-rlt/lfw_mtcnn_fd_rlt_kirk_plus_failed3.json'
 img_root_dir = r'/disk2/data/FACE/LFW/LFW'
 #img_root_dir = r'C:/zyf/dataset/lfw'
 

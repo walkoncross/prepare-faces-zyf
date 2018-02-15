@@ -34,8 +34,8 @@ output_size = (112, 112)
 reference_5pts = get_reference_facial_points(
     output_size, padding_factor, output_padding, output_square)
 
-aligned_save_dir = '../gender_mtcnn_simaligned_112x112'
-file_root_path = '../../../mtcnn-caffe-good/mtcnn_aligner/result_after_align/'
+aligned_save_dir = '/disk2/data/FACE/gender-lablex/gender_mtcnn_simaligned_112x112'
+file_root_path = '/disk2/data/FACE/gender-lablex/face-rects-json-mtcnn'
 
 
 if not osp.exists(file_root_path):
