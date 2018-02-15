@@ -24,14 +24,14 @@ only_align_missed = False
 do_align = True
 
 # crop settings, set the region of cropped faces
-output_square = True
+default_square = True
 padding_factor = 0.25
-output_padding = (0, 0)
+outer_padding = (0, 0)
 output_size = (224, 224)
 
 # get the referenced 5 landmarks position in the crop settings
 reference_5pts = get_reference_facial_points(
-    output_size, padding_factor, output_padding, output_square)
+    output_size, padding_factor, outer_padding, default_square)
 
 
 #landmark_fn = r'../lfw-mtcnn-fd-rlt/lfw-mtcnn-v2-matlab-fd-rlt-3imgs.json'
@@ -45,7 +45,7 @@ img_root_dir = r'C:/zyf/dataset/lfw'
 #landmark_fn = r'../../lfw-mtcnn-fd-rlt/lfw_mtcnn_4nets_fd_rlt_add_missed.json'
 #img_root_dir = r'/disk2/data/FACE/LFW/LFW'
 
-aligned_save_dir = img_root_dir + '-mtcnn-simaligned-224x224-new-4nets'
+aligned_save_dir = img_root_dir + '-mtcnn-simaligned-224x224-new-4nets2'
 
 log_fn1 = 'align_succeeded_list.txt'
 log_fn2 = 'align_failed_list.txt'
@@ -108,19 +108,19 @@ else:
 
     fp_log_params = open(osp.join(aligned_save_dir, log_align_params), 'w')
 #    params_template = '''
-#    output_square = {}
+#    default_square = {}
 #    padding_factor = {}
-#    output_padding = {}
+#    outer_padding = {}
 #    output_size = {}
 #    '''
-    params_template = ('output_square = {}\n'
+    params_template = ('default_square = {}\n'
                        'padding_factor = {}\n'
-                       'output_padding = {}\n'
+                       'outer_padding = {}\n'
                        'output_size = {}\n')
 
     fp_log_params.write(params_template.format(
-        output_square, padding_factor,
-        output_padding, output_size)
+        default_square, padding_factor,
+        outer_padding, output_size)
     )
     fp_log_params.close()
 

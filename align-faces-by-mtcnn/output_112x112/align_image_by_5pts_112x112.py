@@ -17,14 +17,14 @@ import _init_paths
 from fx_warp_and_crop_face import get_reference_facial_points, warp_and_crop_face
 
 # crop settings, set the region of cropped faces
-output_square = True
+default_square = True
 padding_factor = 0
-output_padding = (0, 0)
+outer_padding = (0, 0)
 output_size = (112, 112)
 
 # get the reference 5 landmarks position in the crop settings
 reference_5pts = get_reference_facial_points(
-    output_size, padding_factor, output_padding, output_square)
+    output_size, padding_factor, outer_padding, default_square)
 
 img_root_dir = ''
 landmark_fn = r'../mtcnn_fd_rlt_test_imgs.json'
@@ -46,15 +46,15 @@ if not osp.exists(aligned_save_dir):
 
     fp_log_params = open(osp.join(aligned_save_dir, log_align_params), 'w')
     params_template = '''
-    output_square = {}
+    default_square = {}
     padding_factor = {}
-    output_padding = {}
+    outer_padding = {}
     output_size = {}
     '''
 
     fp_log_params.write(params_template.format(
-            output_square, padding_factor,
-            output_padding, output_size)
+            default_square, padding_factor,
+            outer_padding, output_size)
     )
     fp_log_params.close()
 fp_log1 = open(osp.join(aligned_save_dir, log_fn1), 'w')
@@ -112,7 +112,7 @@ for item in img_list:
                 max_idx = idx
 
     points = np.array(faces[max_idx]['pts'])
-    facial5points = np.reshape(points, (2, -1))
+    facial5points = np.reshape(points, (2, -1)).T
 
     try:
         image = cv2.imread(img_fn, True)

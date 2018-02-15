@@ -24,21 +24,22 @@ only_align_missed = False
 do_align = True
 
 # crop settings, set the region of cropped faces
-output_square = True
+default_square = True
 padding_factor = 0
-output_padding = (0, 0)
+outer_padding = (0, 0)
 output_size = (112, 112)
-#
 # get the referenced 5 landmarks position in the crop settings
-# reference_5pts = get_reference_facial_points(
-#    output_size, padding_factor, output_padding, output_square)
-reference_5pts = None
+reference_5pts = get_reference_facial_points(
+    output_size, padding_factor, outer_padding, default_square)
 
-#landmark_fn = r'../lfw-mtcnn-fd-rlt/lfw-mtcnn-v2-matlab-fd-rlt-3imgs.json'
-# landmark_fn = r'../../lfw-mtcnn-fd-rlt/lfw_mtcnn_fd_rlt.json'
-landmark_fn = r'/disk2/zhaoyafei/lfw-mtcnn-fd-rlt/lfw_mtcnn_fd_rlt_kirk_plus_failed3.json'
-img_root_dir = r'/disk2/data/FACE/LFW/LFW'
-#img_root_dir = r'C:/zyf/dataset/lfw'
+#output_size = (96, 112)
+#reference_5pts = None
+
+# landmark_fn = r'../../lfw-mtcnn-fd-rlt/lfw-mtcnn-v2-matlab-fd-rlt-3imgs.json'
+landmark_fn = r'../../lfw-mtcnn-fd-rlt/lfw_mtcnn_falied3_align_rlt.json'
+# landmark_fn = r'/disk2/zhaoyafei/lfw-mtcnn-fd-rlt/lfw_mtcnn_fd_rlt_kirk_plus_failed3.json'
+# img_root_dir = r'/disk2/data/FACE/LFW/LFW'
+img_root_dir = r'C:/zyf/dataset/lfw'
 
 #landmark_fn = r'../../lfw-mtcnn-fd-rlt/lfw-mtcnn-v2-matlab-fd-rlt-3imgs.json'
 #landmark_fn = r'../../lfw-mtcnn-fd-rlt/lfw_mtcnn_falied3_align_rlt.json'
@@ -111,19 +112,19 @@ else:
 
 #    fp_log_params = open(osp.join(aligned_save_dir, log_align_params), 'w')
 # params_template = '''
-##    output_square = {}
+##    default_square = {}
 ##    padding_factor = {}
-##    output_padding = {}
+##    outer_padding = {}
 ##    output_size = {}
 # '''
-#    params_template = ('output_square = {}\n'
+#    params_template = ('default_square = {}\n'
 #                       'padding_factor = {}\n'
-#                       'output_padding = {}\n'
+#                       'outer_padding = {}\n'
 #                       'output_size = {}\n')
 #
 #    fp_log_params.write(params_template.format(
-#            output_square, padding_factor,
-#            output_padding, output_size)
+#            default_square, padding_factor,
+#            outer_padding, output_size)
 #    )
 #    fp_log_params.close()
 
@@ -215,9 +216,7 @@ else:
                           + str(max_overlap_idx) + '\n')
             if do_align:
                 points = np.array(faces[max_overlap_idx]['pts'])
-                #facial5points = np.reshape(points, (2, -1))
-                facial5points = np.reshape(points, (-1, 2))
-                # print facial5points
+                facial5points = np.reshape(points, (2, -1)).T
 
                 try:
                     image = cv2.imread(img_fn, True)

@@ -25,14 +25,14 @@ only_align_missed = False
 do_align = True
 
 # crop settings, set the region of cropped faces
-output_square = True
+default_square = True
 padding_factor = 0
-output_padding = (0, 0)
+outer_padding = (0, 0)
 output_size = (112, 112)
 
 # get the referenced 5 landmarks position in the crop settings
 reference_5pts = get_reference_facial_points(
-    output_size, padding_factor, output_padding, output_square)
+    output_size, padding_factor, outer_padding, default_square)
 
 aligned_save_dir = '/disk2/data/FACE/gender-lablex/gender_mtcnn_simaligned_112x112'
 file_root_path = '/disk2/data/FACE/gender-lablex/face-rects-json-mtcnn'
