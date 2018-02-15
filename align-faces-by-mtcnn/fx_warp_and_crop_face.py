@@ -32,18 +32,22 @@ class FaceWarpException(Exception):
 
 def get_reference_facial_points(output_size=None,
                                 inner_padding_factor=0.0,
-                                output_padding=(0, 0),
-                                output_square=False):
+                                outer_padding=(0, 0),
+                                default_square=False):
     """
     Function:
     ----------
         get reference 5 key points according to crop settings:
 
-        1. If output_square: make the default crop_size (96, 112) into a square;
-        2. Pad the crop_size by inner_padding_factor in each side;
-        3. Resize crop_size into (output_size - output_padding*2),
-            pad into output_size with output_padding;
-        4. Output reference_5point;
+        0. Set default crop_size:
+            if default_square: 
+                crop_size = (112, 112)
+            else: 
+                crop_size = (96, 112)
+        1. Pad the crop_size by inner_padding_factor in each side;
+        2. Resize crop_size into (output_size - outer_padding*2),
+            pad into output_size with outer_padding;
+        3. Output reference_5point;
 
     Parameters:
     ----------
@@ -51,67 +55,111 @@ def get_reference_facial_points(output_size=None,
             size of aligned face image
         @inner_padding_factor: (w_factor, h_factor)
             padding factor for inner (w, h)
-        @output_padding: (w_pad, h_pad)
+        @outer_padding: (w_pad, h_pad)
             each row is a pair of coordinates (x, y)
-        @output_square: True or False
+        @default_square: True or False
             if True:
-                 make the default crop_size (96, 112) into a square before padding;
-                 that means actual crop_size = (112, 112)
+                default crop_size = (112, 112)
             else:
-                keep the crop ratio in default crop_size (96, 112) before padding;
+                default crop_size = (96, 112);
 
-        !!! make sure:
-            (output_size - output_padding)
-            = some_scale * (actual crop_size * (1.0 + inner_padding_factor))
+        !!! make sure, if output_size is not None:
+                (output_size - outer_padding) 
+                = some_scale * (default crop_size * (1.0 + inner_padding_factor))
     Returns:
     ----------
         @reference_5point: 5x2 np.array
             each row is a pair of transformed coordinates (x, y)
     """
-    if output_size is None:
-        return REFERENCE_FACIAL_POINTS
+    print '\n===> get_reference_facial_points():'
 
-    if not (output_padding[0] < output_size[0]
-            and output_padding[1] < output_size[1]):
-        raise FaceWarpException('Not (output_padding[0] < output_size[0]'
-                                'and output_padding[1] < output_size[1])')
-
-    if not (0 <= inner_padding_factor <= 1.0):
-        raise FaceWarpException('Not (0 <= inner_padding_factor <= 1.0)')
-
-    if (output_size == DEFAULT_CROP_SIZE
-            and inner_padding_factor == 0
-            and output_padding == (0, 0)
-            and output_square is False):
-        return REFERENCE_FACIAL_POINTS
+    print '---> Params:'
+    print '            output_size: ', output_size
+    print '            inner_padding_factor: ', inner_padding_factor
+    print '            outer_padding:', outer_padding
+    print '            default_square: ', default_square
 
     tmp_5pts = np.array(REFERENCE_FACIAL_POINTS)
     tmp_crop_size = np.array(DEFAULT_CROP_SIZE)
 
-    # 1) make the inner region a square
-    if output_square:
+    # 0) make the inner region a square
+    if default_square:
         size_diff = max(tmp_crop_size) - tmp_crop_size
-        tmp_5pts = tmp_5pts + size_diff / 2
-        tmp_crop_size = tmp_crop_size + size_diff
+        tmp_5pts += size_diff / 2
+        tmp_crop_size += size_diff
 
-    # 2) pad the inner region according inner_padding_factor
-    size_diff = tmp_crop_size * inner_padding_factor * 2
-    tmp_5pts = tmp_5pts + size_diff / 2
-    tmp_crop_size = tmp_crop_size + size_diff
+    print '---> default:'
+    print '              crop_size = ', tmp_crop_size
+    print '              reference_5pts = ', tmp_5pts
 
-    size_bf_output_pad = np.array(output_size) - np.array(output_padding) * 2
-    if size_bf_output_pad[0] * tmp_crop_size[1] != size_bf_output_pad[1] * tmp_crop_size[0]:
-        raise FaceWarpException('size_bf_output_pad[0]*tmp_crop_size[1]'
-                                ' != size_bf_output_pad[1]*tmp_crop_size[0]')
+    if (output_size and
+            output_size[0] == tmp_crop_size[0] and
+            output_size[1] == tmp_crop_size[1]):
+        print 'output_size == DEFAULT_CROP_SIZE {}: return default reference points'.format(tmp_crop_size)
+        return tmp_5pts
 
-    # 3) resize the padded inner region
-    scale_factor = size_bf_output_pad[0] / tmp_crop_size[0]
+    if (inner_padding_factor == 0 and
+            outer_padding == (0, 0)):
+        if output_size is None:
+            print 'No paddings to do: return default reference points'
+            return tmp_5pts
+        else:
+            raise FaceWarpException(
+                'No paddings to do, output_size must be None or {}'.format(tmp_crop_size))
+
+    # check output size
+    if not (0 <= inner_padding_factor <= 1.0):
+        raise FaceWarpException('Not (0 <= inner_padding_factor <= 1.0)')
+
+    if ((inner_padding_factor > 0 or outer_padding[0] > 0 or outer_padding[1] > 0)
+            and output_size is None):
+        output_size = tmp_crop_size * \
+            (1 + inner_padding_factor * 2).astype(np.int32)
+        output_size += np.array(outer_padding)
+        print '              deduced from paddings, output_size = ', output_size
+
+    if not (outer_padding[0] < output_size[0]
+            and outer_padding[1] < output_size[1]):
+        raise FaceWarpException('Not (outer_padding[0] < output_size[0]'
+                                'and outer_padding[1] < output_size[1])')
+
+    # 1) pad the inner region according inner_padding_factor
+    print '---> STEP1: pad the inner region according inner_padding_factor'
+    if inner_padding_factor > 0:
+        size_diff = tmp_crop_size * inner_padding_factor * 2
+        tmp_5pts += size_diff / 2
+        tmp_crop_size += np.round(size_diff).astype(np.int32)
+
+    print '              crop_size = ', tmp_crop_size
+    print '              reference_5pts = ', tmp_5pts
+
+    # 2) resize the padded inner region
+    print '---> STEP2: resize the padded inner region'
+    size_bf_outer_pad = np.array(output_size) - np.array(outer_padding) * 2
+    print '              crop_size = ', tmp_crop_size
+    print '              size_bf_outer_pad = ', size_bf_outer_pad
+
+    if size_bf_outer_pad[0] * tmp_crop_size[1] != size_bf_outer_pad[1] * tmp_crop_size[0]:
+        raise FaceWarpException('Must have (output_size - outer_padding)'
+                                '= some_scale * (crop_size * (1.0 + inner_padding_factor)')
+
+    scale_factor = size_bf_outer_pad[0].astype(np.float32) / tmp_crop_size[0]
+    print '              resize scale_factor = ', scale_factor
     tmp_5pts = tmp_5pts * scale_factor
 #    size_diff = tmp_crop_size * (scale_factor - min(scale_factor))
 #    tmp_5pts = tmp_5pts + size_diff / 2
+    tmp_crop_size = size_bf_outer_pad
+    print '              crop_size = ', tmp_crop_size
+    print '              reference_5pts = ', tmp_5pts
 
-    # 4) add output_padding
-    reference_5point = tmp_5pts + np.array(output_padding)
+    # 3) add outer_padding to make output_size
+    reference_5point = tmp_5pts + np.array(outer_padding)
+    tmp_crop_size = output_size
+    print '---> STEP3: add outer_padding to make output_size'
+    print '              crop_size = ', tmp_crop_size
+    print '              reference_5pts = ', tmp_5pts
+
+    print '===> end get_reference_facial_points\n'
 
     return reference_5point
 
@@ -210,15 +258,15 @@ def warp_and_crop_face(src_img,
         if crop_size[0] == 96 and crop_size[1] == 112:
             reference_pts = REFERENCE_FACIAL_POINTS
         else:
-            output_square = False
+            default_square = False
             inner_padding_factor = 0
-            output_padding = (0, 0)
+            outer_padding = (0, 0)
             output_size = crop_size
 
             reference_pts = get_reference_facial_points(output_size,
                                                         inner_padding_factor,
-                                                        output_padding,
-                                                        output_square)
+                                                        outer_padding,
+                                                        default_square)
 
     ref_pts = np.float32(reference_pts)
     ref_pts_shp = ref_pts.shape
@@ -269,15 +317,15 @@ if __name__ == '__main__':
     print '\n=================================='
     print 'test get_reference_facial_points()'
 
-    output_square = True
+    default_square = True
     inner_padding_factor = 0
-    output_padding = (0, 0)
+    outer_padding = (0, 0)
     output_size = (112, 112)
 
     reference_5pts = get_reference_facial_points(output_size,
                                                  inner_padding_factor,
-                                                 output_padding,
-                                                 output_square)
+                                                 outer_padding,
+                                                 default_square)
 
     print '--->reference_5pts:\n', reference_5pts
 
@@ -369,19 +417,19 @@ if __name__ == '__main__':
 
     print '===>test default square crop setting'
     # crop settings, set the region of cropped faces
-#    output_square = True
+#    default_square = True
 #    inner_padding_factor = 0.25
-#    output_padding = (0, 0)
+#    outer_padding = (0, 0)
 #    output_size = (224, 224)
 
-    output_square = True
+    default_square = True
     inner_padding_factor = 0
-    output_padding = (0, 0)
+    outer_padding = (0, 0)
     output_size = (112, 112)
 
     # get the reference 5 landmarks position in the crop settings
     reference_5pts = get_reference_facial_points(
-        output_size, inner_padding_factor, output_padding, output_square)
+        output_size, inner_padding_factor, outer_padding, default_square)
     print '--->reference_5pts:\n', reference_5pts
 
     print '===>test default square crop setting with similarity transform'
