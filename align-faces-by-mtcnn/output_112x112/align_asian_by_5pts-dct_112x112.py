@@ -52,30 +52,47 @@ else:
         for ff in files[start_cnt:]:
             err_msg = ''
             json_fn = osp.join(json_root_path, root, ff)
-            print '===> Load json ff: ', json_fn
+            print '===> Load json file: ', json_fn
             f = open(json_fn, 'r')
             count = count + 1
             print count
             data = json.load(f)
             f.close()
 
-            img_fn = osp.join(img_root_dir, root, ff)
+            # print 'img_root_dir: ', img_root_dir
+            # print 'root: ', root
+
+            subdir = osp.split(root)[1]
+
             base_name = osp.splitext(ff)[0]
+            img_subdir = osp.join(img_root_dir, subdir)
+            img_fn = osp.join(img_subdir, base_name + '.jpg')
+            # print 'base_name: ', base_name
+            # print 'img_subdir: ', img_subdir
+            # print 'img_fn: ', img_fn
+
+            if not osp.exists(img_fn):
+                for ff2 in os.listdir(img_subdir):
+                    if ff2.startswith(base_name + '.'):
+                        img_fn = osp.join(img_subdir, ff2)
+                        break
+           
+            print '---> read image: ', img_fn
             image = cv2.imread(img_fn, True)
 
-            save_sub_dir = osp.join(aligned_save_dir, root
-            if osp.exists(save_sub_dir):
+            save_sub_dir = osp.join(aligned_save_dir, subdir)
+            if not osp.exists(save_sub_dir):
                 os.makedirs(save_sub_dir)
 
             # print filename
-            save_fn=osp.join(save_sub_dir, base_name + '.jpg')
+            save_fn = osp.join(save_sub_dir, base_name + '.jpg')
             # print save_fn
 
-            points=np.array(det["pts"])
-            facial5points=np.reshape(points, (2, -1)).T
+            points = np.array(data['faces']["pts"])
+            facial5points = np.reshape(points, (2, -1)).T
 
             # imageBGR = io.imread(data[u'url'])
             # image = cv2.cvtColor(imageBGR, cv2.COLOR_BGR2RGB)
-            dst_img=warp_and_crop_face(
+            dst_img = warp_and_crop_face(
                 image, facial5points, reference_5pts, output_size)
             cv2.imwrite(save_fn, dst_img)
