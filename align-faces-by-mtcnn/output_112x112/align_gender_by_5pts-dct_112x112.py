@@ -62,7 +62,7 @@ else:
 
             img_fn = data['imgname']
             base_name = osp.splitext(img_fn)[0]
-            image = cv2.imread(osp.join(img_root_dir), img_fn)
+            image = cv2.imread(osp.join(img_root_dir, img_fn), True)
 
             for i, det in enumerate(data['detect']):
                 print('---> Processing face #%d', i)
