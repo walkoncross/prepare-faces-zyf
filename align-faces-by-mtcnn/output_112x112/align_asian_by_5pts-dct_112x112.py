@@ -80,6 +80,10 @@ else:
                         img_fn = osp.join(img_subdir, ff2)
                         break
 
+            save_sub_dir = osp.join(aligned_save_dir, subdir)
+            if not osp.exists(save_sub_dir):
+                os.makedirs(save_sub_dir)
+
             save_fn = osp.join(save_sub_dir, base_name + '.jpg')
             # print save_fn
             if skip_existed_results and osp.exists(save_fn):
@@ -88,10 +92,6 @@ else:
 
             print '---> read image: ', img_fn
             image = cv2.imread(img_fn, True)
-
-            save_sub_dir = osp.join(aligned_save_dir, subdir)
-            if not osp.exists(save_sub_dir):
-                os.makedirs(save_sub_dir)
 
             # print filename
 
