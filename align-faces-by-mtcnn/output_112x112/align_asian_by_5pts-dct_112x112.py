@@ -17,6 +17,7 @@ import os.path as osp
 import _init_paths
 from fx_warp_and_crop_face import get_reference_facial_points, warp_and_crop_face
 
+skip_existed_results = True
 # GT_RECT = [68, 68, 182, 182]
 # GT_AREA = (GT_RECT[2] - GT_RECT[0] + 1) * (GT_RECT[3] - GT_RECT[1] + 1)
 overlap_thresh = 0.3
@@ -50,7 +51,9 @@ else:
     count = start_cnt
     for root, dirs, files in os.walk(json_root_path):
         for ff in files[start_cnt:]:
-            err_msg = ''
+            if ff.startswith('.') or not ff.endswith('.json'):
+                continue
+
             json_fn = osp.join(json_root_path, root, ff)
             print '===> Load json file: ', json_fn
             f = open(json_fn, 'r')
@@ -76,7 +79,13 @@ else:
                     if ff2.startswith(base_name + '.'):
                         img_fn = osp.join(img_subdir, ff2)
                         break
-           
+
+            save_fn = osp.join(save_sub_dir, base_name + '.jpg')
+            # print save_fn
+            if skip_existed_results and osp.exists(save_fn):
+                print '---> read image: ', img_fn
+                print '     result image already exists: ', save_fn
+
             print '---> read image: ', img_fn
             image = cv2.imread(img_fn, True)
 
@@ -85,8 +94,6 @@ else:
                 os.makedirs(save_sub_dir)
 
             # print filename
-            save_fn = osp.join(save_sub_dir, base_name + '.jpg')
-            # print save_fn
 
             points = np.array(data['faces']["pts"])
             facial5points = np.reshape(points, (2, -1)).T

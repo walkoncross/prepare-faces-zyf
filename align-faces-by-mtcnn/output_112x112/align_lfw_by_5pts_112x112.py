@@ -36,16 +36,16 @@ reference_5pts = get_reference_facial_points(
 #reference_5pts = None
 
 # landmark_fn = r'../../lfw-mtcnn-fd-rlt/lfw-mtcnn-v2-matlab-fd-rlt-3imgs.json'
-landmark_fn = r'../../lfw-mtcnn-fd-rlt/lfw_mtcnn_falied3_align_rlt.json'
+# landmark_fn = r'../../lfw-mtcnn-fd-rlt/lfw_mtcnn_falied3_align_rlt.json'
 # landmark_fn = r'/disk2/zhaoyafei/lfw-mtcnn-fd-rlt/lfw_mtcnn_fd_rlt_kirk_plus_failed3.json'
 # img_root_dir = r'/disk2/data/FACE/LFW/LFW'
-img_root_dir = r'C:/zyf/dataset/lfw'
+# img_root_dir = r'C:/zyf/dataset/lfw'
 
-#landmark_fn = r'/disk2/data/lfw-mtcnn-fd-rlt/lfw-mtcnn-v2-matlab-fd-rlt-3imgs.json'
-#landmark_fn = r'/disk2/data/lfw-mtcnn-fd-rlt/lfw_mtcnn_falied3_align_rlt.json'
-# landmark_fn = r'/disk2/data/lfw-mtcnn-fd-rlt/lfw_mtcnn_fd_rlt_kirk_plus_failed3.json'
-#landmark_fn = r'/disk2/data/lfw-mtcnn-fd-rlt/lfw_mtcnn_4nets_fd_rlt_add_missed.json'
-#img_root_dir = r'/disk2/data/FACE/LFW/LFW'
+#landmark_fn = r'/disk2/zhaoyafei/lfw-mtcnn-fd-rlt/lfw-mtcnn-v2-matlab-fd-rlt-3imgs.json'
+#landmark_fn = r'/disk2/zhaoyafei/lfw-mtcnn-fd-rlt/lfw_mtcnn_falied3_align_rlt.json'
+# landmark_fn = r'/disk2/zhaoyafei/lfw-mtcnn-fd-rlt/lfw_mtcnn_fd_rlt_kirk_plus_failed3.json'
+landmark_fn = r'/disk2/zhaoyafei/lfw-mtcnn-fd-rlt/lfw_mtcnn_4nets_fd_rlt_add_missed.json'
+img_root_dir = r'/disk2/data/FACE/LFW/LFW'
 aligned_save_dir = img_root_dir + '-mtcnn-simaligned-112x112'
 
 log_fn1 = 'align_succeeded_list.txt'

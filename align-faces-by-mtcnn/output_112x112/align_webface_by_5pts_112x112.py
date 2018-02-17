@@ -38,6 +38,10 @@ img_root_dir = r'C:/zyf/dataset/webface/CASIA-maxpy-clean'
 #img_root_dir = r'/disk2/data/FACE/webface/CASIA-maxpy-clean'
 aligned_save_dir = img_root_dir + '_mtcnn_simaligned_112x112'
 
+#landmark_fn = r'/disk2/zhaoyafei/webface-mtcnn-fd-rlt/useless-landmark_new_format_add_missed.json'
+#img_root_dir = r'/disk2/data/FACE/webface/CASIA-maxpy-clean/useless'
+#aligned_save_dir = img_root_dir + '_mtcnn_simaligned_112x112/useless'
+
 log_fn1 = 'align_succeeded_list.txt'
 log_fn2 = 'align_failed_list.txt'
 log_fn3 = 'faces_wrong_max_score_idx_list.txt'
